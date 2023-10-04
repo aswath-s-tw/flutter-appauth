@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_appauth/flutter_appauth.dart';
 
-
 Map<String, dynamic> parseJwt(String token) {
   final parts = token.split('.');
   if (parts.length != 3) {
@@ -36,7 +35,6 @@ String _decodeBase64(String str) {
 
   return utf8.decode(base64Url.decode(output));
 }
-
 
 void main() {
   runApp(const MyApp());
@@ -74,14 +72,34 @@ class _MyAppState extends State<MyApp> {
           ],
         ),
       ))!;
+
       print("${result.accessToken} accessToken");
       print("${result.idToken} idToken");
       print("${result.refreshToken} refreshToken");
 
-      Map<String,dynamic> parsedIdToken = parseJwt(result.idToken!);
+      final TokenResponse refreshed = (await appAuth.token(TokenRequest(
+        const String.fromEnvironment("CLIENT_ID"),
+        const String.fromEnvironment("REDIRECT_URL"),
+        refreshToken: result.refreshToken,
+        discoveryUrl: const String.fromEnvironment("DISCOVERY_URL"),
+        scopes: [
+          'openid',
+          'profile',
+          'email',
+          'offline_access',
+        ],
+      )))!;
+
+     
+      print("${refreshed.accessToken} accessToken");
+      print("${refreshed.idToken} idToken");
+      print("${refreshed.refreshToken} refreshToken");
+
+      Map<String, dynamic> parsedIdToken = parseJwt(refreshed.idToken!);
 
       setState(() {
-        postSignInText = "Name: ${parsedIdToken["name"]}, Email: ${parsedIdToken["email"]}";
+        postSignInText =
+            "Name: ${parsedIdToken["name"]}, Email: ${parsedIdToken["email"]}";
         isLoading = false;
       });
     } catch (e) {

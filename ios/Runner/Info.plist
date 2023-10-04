@@ -54,7 +54,7 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.mynativeapp</string>
+				<string>com.thoughtworks.smart-access</string>
 			</array>
 		</dict>
 	</array>
